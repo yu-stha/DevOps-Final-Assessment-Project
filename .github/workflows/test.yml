@@ -13,32 +13,9 @@ jobs:
   # This workflow contains a single job called "build"
   build:
     # The type of runner that the job will run on
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Checkout PULL|Clone Code
-        uses: actions/checkout@v5
-
-      # Runs a single command using the runners shell
-      - name: build container
-        run: dockers build -t web:1.0 -f /opt/actions-runner/_work/cicd_11-30_batch/cicd_11-30_batch/Dockerfile .
-  
-  deploy:
-    needs: build
-    runs-on: self-hosted
-
-    steps:
-      - name: Start or create container
-        run: |
-          if docker ps -a --format '{{.Names}}' | grep -q '^test$'; then
-            echo "Container exists, starting it..."
-            docker start test
-          else
-            echo "Container does not exist, creating it..."
-            docker run -d \
-              -v '/opt/actions-runner/_work/cicd_11-30_batch/cicd_11-30_batch/html:/var/www/html/' \
-              --name test \
-              -p 80:80 \
-              web:1.0
-          fi
+      - name: testing
+        run: docker version
