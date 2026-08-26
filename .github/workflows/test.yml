@@ -16,6 +16,14 @@ jobs:
       - name: build container
         run: docker build -t web:1.0 -f /opt/actions-runner/_work/cicd_11-30_batch/cicd_11-30_batch/Dockerfile .
   
+  testing:
+    needs: build
+    runs-on: self-hosted
+    
+    steps:
+      - name: testing
+        run: echo testing
+  
   sonar:
     needs: build
     runs-on: self-hosted
