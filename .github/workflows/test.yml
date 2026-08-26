@@ -15,15 +15,7 @@ jobs:
 
       - name: build container
         run: docker build -t web:1.0 -f /opt/actions-runner/_work/cicd_11-30_batch/cicd_11-30_batch/Dockerfile .
-  
-  testing:
-    needs: build
-    runs-on: self-hosted
     
-    steps:
-      - name: testing
-        run: echo testing
-  
   sonar:
     needs: build
     runs-on: self-hosted
@@ -36,9 +28,17 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  testing:
+    needs: sonar
+    runs-on: self-hosted
+    
+    steps:
+      - name: testing
+        run: echo testing
   
   deploy:
-    needs: sonar
+    needs: testing
     runs-on: self-hosted
 
     steps:
