@@ -1,31 +1,36 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+
   push:
     branches: [ "main" ]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: self-hosted
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       - name: Checkout PULL|Clone Code
         uses: actions/checkout@v5
 
-      # Runs a single command using the runners shell
       - name: build container
         run: dockers build -t web:1.0 -f /opt/actions-runner/_work/cicd_11-30_batch/cicd_11-30_batch/Dockerfile .
   
-  deploy:
+  sonar:
     needs: build
+    runs-on: self-hosted
+    
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+  
+  deploy:
+    needs: sonar
     runs-on: self-hosted
 
     steps:
