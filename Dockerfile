@@ -1,7 +1,10 @@
-FROM ubuntu:26.04
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
-RUN apt update && apt upgrade -y && apt autopurge -y
-RUN apt install nginx -y
+COPY --chown=nginx:nginx html/ /usr/share/nginx/html/
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+USER nginx
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:8080/ || exit 1
