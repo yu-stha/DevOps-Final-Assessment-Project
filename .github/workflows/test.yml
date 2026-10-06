@@ -16,11 +16,21 @@ jobs:
       - name: build container
         run: docker build -t web:1.0 .
 
-  # Sonar stage from the original is paused: it needs SONAR_TOKEN and
-  # SONAR_HOST_URL secrets pointing at a SonarQube server. Re-enable later.
+  sonar:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+      - uses: SonarSource/sonarqube-scan-action@7006c4492b2e0ee0f816d36501671557c97f5995
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   testing:
-    needs: build
+    needs: sonar
     runs-on: self-hosted
 
     steps:
