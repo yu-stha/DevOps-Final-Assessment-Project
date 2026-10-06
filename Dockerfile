@@ -2,6 +2,8 @@ FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --chown=nginx:nginx html/ /usr/share/nginx/html/
 
+USER nginx
+
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
