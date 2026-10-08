@@ -1,0 +1,32 @@
+- name: Prepare the CI/CD runner host
+  hosts: localhost
+  connection: local
+  become: true
+  tasks:
+    - name: Install runner prerequisites
+      ansible.builtin.apt:
+        name:
+          - unzip
+          - curl
+          - git
+          - ca-certificates
+          - python3-docker
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Add the login user to the docker group
+      ansible.builtin.user:
+        name: "{{ lookup('env', 'SUDO_USER') or lookup('env', 'USER') }}"
+        groups: docker
+        append: true
+
+    - name: Check Docker is available
+      ansible.builtin.command: docker --version
+      register: docker_version
+      changed_when: false
+      check_mode: false
+
+    - name: Show Docker version
+      ansible.builtin.debug:
+        msg: "{{ docker_version.stdout }}"
